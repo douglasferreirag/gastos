@@ -1,0 +1,483 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package doug;
+
+import java.sql.*;
+
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author DouglasFerreirag
+ */
+public class ListagemDivida extends javax.swing.JFrame {
+
+    /**
+     * Creates new form RegistroDivida
+     */
+    
+      
+    private String[] args;
+ 
+    private static javax.swing.JTextField jtxtReturn, jtxtColumn;
+    
+    private static javax.swing.table.DefaultTableModel dtm ;
+    
+    private static String op = "";
+    
+    private static String titulo;
+   
+    
+    public ListagemDivida() {
+        initComponents();
+        
+        this.setExtendedState(MAXIMIZED_BOTH);
+        
+        new Funcoes().executeTimer(jtxtDataHora, "dd/MM/yyyy hh:mm:ss");
+        
+        
+        
+    }
+    
+    private static void tabela(){ // Constrói a tabela com base nas restrições do programa.
+        
+            if( (new Funcoes().getTipoUsuario(jtxtUsuario.getText()).toString().compareTo("administrador") == 0) ||
+                 (new Funcoes().getTipoUsuario(jtxtUsuario.getText()).toString().compareTo("root") == 0) )  
+                
+                    preenche("org.gjt.mm.mysql.Driver","jdbc:mysql://localhost/gastos", "root", "","Select * from divida Order by codigo asc" ) ; // Preenche a tabela.
+            
+            else
+                
+            {
+            
+                String[][] parametro = new String[1][2];
+                
+                parametro[0][0] = "String";
+                
+                parametro[0][1] = jtxtUsuario.getText();
+                
+                
+                preenche("org.gjt.mm.mysql.Driver","jdbc:mysql://localhost/gastos", "root", "",
+                        
+                            "Select * from divida where codigoPessoa = " + new Funcoes().retornar("SELECT codigoPessoa FROM login WHERE usuario = ?", "codigoPessoa", parametro) + 
+                        
+                                "Order by codigo asc" ) ; // Preenche a tabela.
+            
+                
+                
+            }
+            
+            
+        
+    }
+    
+    private static void preenche (String driver, String url, String user, String password, String query){
+     // Preenche a tabela.
+     
+        
+        Connection conn = null;
+    
+        Statement st = null;
+          
+         
+          
+        jtDividas.setModel(new javax.swing.table.DefaultTableModel(
+                         new Object [][] { }, new String [] {
+        
+                         "Código","Código da pessoa", "Data de vencimento", "Descrição", //Aqui adiciona-se as colunas e seus respectivos nomes.
+                         "Valor em reais"     
+                         }
+        ));
+          
+         
+        try
+               
+        {
+                
+                Class.forName(driver);
+                
+                conn = DriverManager.getConnection(url, user, password);
+       
+                // Our SQL SELECT query. 
+                
+                // If you only need a few columns, specify them by name instead of using "*".
+                                                                                                                                            
+               // Create the java statement.
+                
+               st = conn.createStatement();
+       
+                // Execute the query, and get a java resultset.
+               
+                ResultSet rs = st.executeQuery(query);
+                
+                
+               // Iterate through the java resultset.
+                
+               
+                
+               while (rs.next())
+                   
+               {   
+                   
+                   
+                            javax.swing.table.DefaultTableModel dtm = (javax.swing.table.DefaultTableModel)jtDividas.getModel();
+
+                            dtm.addRow(new Object[]{rs.getDouble("codigo"),rs.getDouble("codigoPessoa"),Funcoes.convertData(rs.getDate("dataVence"), "dd-MM-yyyy "), 
+                                     rs.getString("descricao"), rs.getDouble("valor") });
+                          
+                            
+                    
+                   
+                     
+                }
+             
+                st.close();
+                
+                conn.close();
+            }
+           
+            catch (Exception e)
+                
+            {
+                 System.err.println("Got an exception! ");
+                 
+                 System.err.println(e.getMessage());
+                 
+            }
+
+                      
+    }
+     
+   
+    
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jspFundo = new javax.swing.JScrollPane();
+        jpFundo = new javax.swing.JPanel();
+        jtxtUsuario = new javax.swing.JTextField();
+        jspLista = new javax.swing.JScrollPane();
+        jtDividas = new javax.swing.JTable();
+        jtxtDataHora = new javax.swing.JTextField();
+        jmbMenu = new javax.swing.JMenuBar();
+        jmMenu = new javax.swing.JMenu();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 0, 102));
+        setForeground(java.awt.Color.orange);
+        setName("jfRegistroDivida"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
+
+        jspFundo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 0, 51), 12));
+
+        jtxtUsuario.setEditable(false);
+        jtxtUsuario.setBackground(new java.awt.Color(255, 0, 51));
+        jtxtUsuario.setFont(new java.awt.Font("Tahoma", 3, 48)); // NOI18N
+        jtxtUsuario.setForeground(new java.awt.Color(0, 0, 153));
+        jtxtUsuario.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102), 5), "Usuário", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 3, 48), new java.awt.Color(102, 0, 255))); // NOI18N
+
+        jtDividas.setBackground(new java.awt.Color(255, 0, 51));
+        jtDividas.setFont(new java.awt.Font("Tahoma", 3, 48)); // NOI18N
+        jtDividas.setForeground(new java.awt.Color(0, 0, 153));
+        jtDividas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jtDividas.setCellSelectionEnabled(true);
+        jtDividas.setRowHeight(60);
+        jtDividas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jtDividasMousePressed(evt);
+            }
+        });
+        jspLista.setViewportView(jtDividas);
+        jtDividas.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        jtxtDataHora.setEditable(false);
+        jtxtDataHora.setBackground(new java.awt.Color(255, 0, 51));
+        jtxtDataHora.setFont(new java.awt.Font("Tahoma", 3, 48)); // NOI18N
+        jtxtDataHora.setForeground(new java.awt.Color(0, 0, 153));
+        jtxtDataHora.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102), 5), "Data e Hora", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 3, 48), new java.awt.Color(102, 0, 255))); // NOI18N
+
+        javax.swing.GroupLayout jpFundoLayout = new javax.swing.GroupLayout(jpFundo);
+        jpFundo.setLayout(jpFundoLayout);
+        jpFundoLayout.setHorizontalGroup(
+            jpFundoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpFundoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpFundoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpFundoLayout.createSequentialGroup()
+                        .addComponent(jtxtDataHora, javax.swing.GroupLayout.PREFERRED_SIZE, 1126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jspLista, javax.swing.GroupLayout.PREFERRED_SIZE, 1335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtxtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 1126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jpFundoLayout.setVerticalGroup(
+            jpFundoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpFundoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jtxtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
+                .addGroup(jpFundoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFundoLayout.createSequentialGroup()
+                        .addComponent(jspLista, javax.swing.GroupLayout.PREFERRED_SIZE, 1009, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFundoLayout.createSequentialGroup()
+                        .addComponent(jtxtDataHora, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27))))
+        );
+
+        jspFundo.setViewportView(jpFundo);
+
+        jmbMenu.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 102, 102), 10, true));
+
+        jmMenu.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
+        jmMenu.setText("Menu Principal");
+        jmMenu.setFont(new java.awt.Font("Tahoma", 3, 48)); // NOI18N
+        jmMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jmMenuMouseClicked(evt);
+            }
+        });
+        jmbMenu.add(jmMenu);
+
+        setJMenuBar(jmbMenu);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jspFundo, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jspFundo, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jmMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jmMenuMouseClicked
+        // Vai para o menu principal e fecha o frame atual.
+
+        MenuPrincipal.main(args, jtxtUsuario.getText());
+
+        ListagemDivida.this.dispose(); 
+        
+    }//GEN-LAST:event_jmMenuMouseClicked
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // Troca o nome do frame.
+        
+        this.setTitle(titulo);
+        
+    }//GEN-LAST:event_formWindowActivated
+
+    private void jtDividasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtDividasMousePressed
+        // Retornar um dado valor.
+       
+        dtm =  (javax.swing.table.DefaultTableModel)jtDividas.getModel();
+        
+        switch(op){
+                
+                case "Alteração de dados":{
+                    
+                    if(jtDividas.getSelectedColumn() != 1) {
+                    
+                            JOptionPane.showMessageDialog(null,"Valor na coluna selecionada: " + dtm.getValueAt(jtDividas.getSelectedRow() ,jtDividas.getSelectedColumn()).toString() + "." , "System Message", JOptionPane.INFORMATION_MESSAGE);
+                
+                            jtxtReturn.setText(dtm.getValueAt(jtDividas.getSelectedRow() ,jtDividas.getSelectedColumn()).toString());
+                
+                            String nomeColuna = dtm.getColumnName(jtDividas.getSelectedColumn());
+                            
+                            jtxtColumn.setText(nomeColuna);
+                            
+                            JOptionPane.showMessageDialog(null,"Nome da coluna selecionada: " + nomeColuna + "." , "System Message", JOptionPane.INFORMATION_MESSAGE);
+                
+                            
+                    }        
+                
+                    break;
+                    
+                }
+                
+                case "Retorno de código": {
+                    
+                    if(jtDividas.getSelectedColumn() ==  0) {
+                    
+                            JOptionPane.showMessageDialog(null,"Valor na coluna selecionada: " + dtm.getValueAt(jtDividas.getSelectedRow() ,0).toString() + "." , "System Message", JOptionPane.INFORMATION_MESSAGE);
+                
+                            jtxtReturn.setText(dtm.getValueAt(jtDividas.getSelectedRow() ,0).toString());
+                    
+                    }
+                
+                    else
+                    
+                        JOptionPane.showMessageDialog(null," Não selecionou a coluna do código.", "System Message", JOptionPane.INFORMATION_MESSAGE);
+                
+                    break;
+                    
+                }
+                
+                default:{
+                    
+                    JOptionPane.showMessageDialog(null,"Valor na coluna selecionada: " + dtm.getValueAt(jtDividas.getSelectedRow() ,jtDividas.getSelectedColumn()).toString() + "." , "System Message", JOptionPane.INFORMATION_MESSAGE);
+            
+                    JOptionPane.showMessageDialog(null,"Nome da coluna selecionada: " + dtm.getColumnName(jtDividas.getSelectedColumn()) + "." , "System Message", JOptionPane.INFORMATION_MESSAGE);
+                    
+                    break;
+                    
+                    
+                }
+                
+            }
+        
+            if( (op.compareTo("Alteração de dados") == 0) || (op.compareTo("Retorno de código") == 0) )
+        
+                dispose();
+            
+    }//GEN-LAST:event_jtDividasMousePressed
+
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+    /**
+     * @param args the command line arguments
+     */
+    
+    
+    
+    public static void main(String args[], javax.swing.JTextField txtRet,  javax.swing.JTextField txtColuna,String o, boolean ligar, String user, String title) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(ListagemDivida.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(ListagemDivida.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(ListagemDivida.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(ListagemDivida.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ListagemDivida().setVisible(true);
+                
+                titulo = title;
+                
+                jtxtUsuario.setText(user);
+                
+                jtxtReturn  = txtRet;
+                
+                jmMenu.setVisible(ligar);
+                
+                jtxtColumn = txtColuna;
+                
+                op = o;
+                
+                tabela();
+                
+                
+                
+                    
+                
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private static javax.swing.JMenu jmMenu;
+    private javax.swing.JMenuBar jmbMenu;
+    private javax.swing.JPanel jpFundo;
+    private javax.swing.JScrollPane jspFundo;
+    private javax.swing.JScrollPane jspLista;
+    private static javax.swing.JTable jtDividas;
+    private static javax.swing.JTextField jtxtDataHora;
+    private static javax.swing.JTextField jtxtUsuario;
+    // End of variables declaration//GEN-END:variables
+}
